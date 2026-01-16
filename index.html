@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>FUNNY GAMES</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
 <style>
   body {
     font-family: 'Montserrat', sans-serif;
@@ -42,6 +43,7 @@
     color: white;
     outline: none;
     box-sizing: border-box;
+    margin-bottom: 12px;
   }
 
   input::placeholder {
@@ -56,7 +58,7 @@
   button {
     width: 100%;
     height: 46px;
-    margin-top: 18px;
+    margin-top: 6px;
     background: linear-gradient(180deg, #ffffff, #dcdcdc);
     color: #000;
     border: none;
@@ -86,28 +88,71 @@
   }
 </style>
 </head>
+
 <body>
 
 <div class="login-box">
-  <h2>Dashboard</h2>
+  <h2>DASHBOARD | Sign-in</h2>
   <input id="i1" placeholder="Username">
   <input id="i2" type="password" placeholder="Password">
-  <button onclick="f1()" id="loginBtn">Sign in</button>
+  <button onclick="f1()">Sign in</button>
   <div id="e1" class="error">Incorrect username or password.</div>
-  <div id="lockMsg" class="error" style="display:none;"></div>
 </div>
 
 <script>
-const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61"; // username hash
-const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c"; // password hash
-const MAX_ATTEMPTS = 3;
-const LOCK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+/* ---------------------------
+   Minimal UI sound engine
+---------------------------- */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioCtx();
 
-// Initialize localStorage for attempts and lock
-if (!localStorage.getItem("loginAttempts")) localStorage.setItem("loginAttempts", 0);
-if (!localStorage.getItem("lockUntil")) localStorage.setItem("lockUntil", 0);
+function playTone(freq, duration, volume = 0.03) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-// SHA-256 hashing
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  gain.gain.value = volume;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+// Resume audio on first interaction
+document.addEventListener("click", () => {
+  if (audioCtx.state === "suspended") audioCtx.resume();
+}, { once: true });
+
+/* ---------------------------
+   Input + button sounds
+---------------------------- */
+const userInput = document.getElementById("i1");
+const passInput = document.getElementById("i2");
+const button = document.querySelector("button");
+
+function typingSound(e) {
+  if (e.key.length === 1) {
+    playTone(1200 + Math.random() * 80, 0.015, 0.025);
+  }
+}
+
+userInput.addEventListener("keydown", typingSound);
+passInput.addEventListener("keydown", typingSound);
+
+button.addEventListener("mouseenter", () => {
+  playTone(700, 0.03, 0.03);
+});
+
+button.addEventListener("mousedown", () => {
+  playTone(420, 0.05, 0.05);
+});
+
+/* ---------------------------
+   Login logic
+---------------------------- */
 async function h1(t) {
   const enc = new TextEncoder();
   const data = enc.encode(t);
@@ -117,86 +162,26 @@ async function h1(t) {
     .join("");
 }
 
-// Update lock message countdown
-function updateLockMessage() {
-  const lockUntil = parseInt(localStorage.getItem("lockUntil"));
-  const now = Date.now();
-  if (now >= lockUntil) {
-    // Lock expired
-    localStorage.setItem("loginAttempts", 0);
-    localStorage.setItem("lockUntil", 0);
-    document.getElementById("lockMsg").style.display = "none";
-    document.getElementById("loginBtn").disabled = false;
-    return;
-  }
-
-  const remaining = lockUntil - now;
-  const hrs = Math.floor(remaining / (1000 * 60 * 60));
-  const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-  const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-
-  document.getElementById("lockMsg").style.display = "block";
-  document.getElementById("lockMsg").innerText =
-    `Maximum attempts reached, please try again in ${hrs.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`;
-
-  document.getElementById("loginBtn").disabled = true;
-}
-
-// Run countdown every second
-setInterval(updateLockMessage, 1000);
-updateLockMessage();
+const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61";
+const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c";
 
 async function f1() {
-  const lockUntil = parseInt(localStorage.getItem("lockUntil"));
-  if (Date.now() < lockUntil) return; // still locked
+  const u = userInput.value;
+  const p = passInput.value;
 
-  const m4n5o6 = document.getElementById("i1").value;
-  const k7l8s9 = document.getElementById("i2").value;
-
-  const uHash = await h1(m4n5o6);
-  const pHash = await h1(k7l8s9);
+  const uHash = await h1(u);
+  const pHash = await h1(p);
 
   if (uHash === a1b2c3x && pHash === p9q8r7z) {
-    localStorage.setItem("loginAttempts", 0);
-    localStorage.setItem("lockUntil", 0);
-    window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
+    playTone(900, 0.08, 0.06); // success blip
+    window.location.href =
+      "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
   } else {
     document.getElementById("e1").style.display = "block";
-    let attempts = parseInt(localStorage.getItem("loginAttempts")) + 1;
-    localStorage.setItem("loginAttempts", attempts);
-
-    if (attempts >= MAX_ATTEMPTS) {
-      const lockTime = Date.now() + LOCK_DURATION;
-      localStorage.setItem("lockUntil", lockTime);
-      updateLockMessage();
-    }
+    playTone(220, 0.1, 0.05); // error blip
   }
 }
-  // Master console unlock
-window.addEventListener("keydown", (e) => {
-  // Only trigger when user types in the console
-  if (window.consoleUnlockInput === undefined) window.consoleUnlockInput = "";
-
-  // Append key to input string if it's a character
-  if (e.key.length === 1) window.consoleUnlockInput += e.key;
-
-  // Check if the code matches
-  if (window.consoleUnlockInput.includes("fgadmin9393")) {
-    localStorage.setItem("loginAttempts", 0);
-    localStorage.setItem("lockUntil", 0);
-    document.getElementById("loginBtn").disabled = false;
-    document.getElementById("lockMsg").style.display = "none";
-    console.log("Lock cleared!");
-    window.consoleUnlockInput = "fgadmin9393"; // reset input
-  }
-
-  // Optional: limit input length to avoid memory issues
-  if (window.consoleUnlockInput.length > 20) window.consoleUnlockInput = window.consoleUnlockInput.slice(-20);
-});
-  
 </script>
 
 </body>
 </html>
-
-
