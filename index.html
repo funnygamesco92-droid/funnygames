@@ -88,42 +88,91 @@
 </head>
 <body>
 
-  <div class="login-box">
-    <h2>Dashboard</h2>
-    <input id="i1" placeholder="Username">
-    <input id="i2" type="password" placeholder="Password">
-    <button onclick="f1()">Sign in</button>
-    <div id="e1" class="error">Incorrect username or password.</div>
-  </div>
+<div class="login-box">
+  <h2>Dashboard</h2>
+  <input id="i1" placeholder="Username">
+  <input id="i2" type="password" placeholder="Password">
+  <button onclick="f1()" id="loginBtn">Sign in</button>
+  <div id="e1" class="error">Incorrect username or password.</div>
+  <div id="lockMsg" class="error" style="display:none;"></div>
+</div>
 
-  <script>
-    async function h1(t) {
-      const enc = new TextEncoder();
-      const data = enc.encode(t);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
+<script>
+const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61"; // username hash
+const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c"; // password hash
+const MAX_ATTEMPTS = 3;
+const LOCK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
+// Initialize localStorage for attempts and lock
+if (!localStorage.getItem("loginAttempts")) localStorage.setItem("loginAttempts", 0);
+if (!localStorage.getItem("lockUntil")) localStorage.setItem("lockUntil", 0);
+
+// SHA-256 hashing
+async function h1(t) {
+  const enc = new TextEncoder();
+  const data = enc.encode(t);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Update lock message countdown
+function updateLockMessage() {
+  const lockUntil = parseInt(localStorage.getItem("lockUntil"));
+  const now = Date.now();
+  if (now >= lockUntil) {
+    // Lock expired
+    localStorage.setItem("loginAttempts", 0);
+    localStorage.setItem("lockUntil", 0);
+    document.getElementById("lockMsg").style.display = "none";
+    document.getElementById("loginBtn").disabled = false;
+    return;
+  }
+
+  const remaining = lockUntil - now;
+  const hrs = Math.floor(remaining / (1000 * 60 * 60));
+  const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((remaining % (1000 * 60)) / 1000);
+
+  document.getElementById("lockMsg").style.display = "block";
+  document.getElementById("lockMsg").innerText =
+    `Maximum attempts reached, please try again in ${hrs.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`;
+
+  document.getElementById("loginBtn").disabled = true;
+}
+
+// Run countdown every second
+setInterval(updateLockMessage, 1000);
+updateLockMessage();
+
+async function f1() {
+  const lockUntil = parseInt(localStorage.getItem("lockUntil"));
+  if (Date.now() < lockUntil) return; // still locked
+
+  const m4n5o6 = document.getElementById("i1").value;
+  const k7l8s9 = document.getElementById("i2").value;
+
+  const uHash = await h1(m4n5o6);
+  const pHash = await h1(k7l8s9);
+
+  if (uHash === a1b2c3x && pHash === p9q8r7z) {
+    localStorage.setItem("loginAttempts", 0);
+    localStorage.setItem("lockUntil", 0);
+    window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
+  } else {
+    document.getElementById("e1").style.display = "block";
+    let attempts = parseInt(localStorage.getItem("loginAttempts")) + 1;
+    localStorage.setItem("loginAttempts", attempts);
+
+    if (attempts >= MAX_ATTEMPTS) {
+      const lockTime = Date.now() + LOCK_DURATION;
+      localStorage.setItem("lockUntil", lockTime);
+      updateLockMessage();
     }
-
-    const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61"; // username hash
-    const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c"; // password hash
-
-    async function f1() {
-      const m4n5o6 = document.getElementById("i1").value; // user input
-      const k7l8s9 = document.getElementById("i2").value; // password input
-
-      const uHash = await h1(m4n5o6);
-      const pHash = await h1(k7l8s9);
-
-      if (uHash === a1b2c3x && pHash === p9q8r7z) {
-        window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
-      } else {
-        document.getElementById("e1").style.display = "block";
-      }
-    }
-  </script>
+  }
+}
+</script>
 
 </body>
 </html>
-
