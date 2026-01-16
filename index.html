@@ -172,7 +172,30 @@ async function f1() {
     }
   }
 }
+  // Master console unlock
+window.addEventListener("keydown", (e) => {
+  // Only trigger when user types in the console
+  if (window.consoleUnlockInput === undefined) window.consoleUnlockInput = "";
+
+  // Append key to input string if it's a character
+  if (e.key.length === 1) window.consoleUnlockInput += e.key;
+
+  // Check if the code matches
+  if (window.consoleUnlockInput.includes("fgadmin9393")) {
+    localStorage.setItem("loginAttempts", 0);
+    localStorage.setItem("lockUntil", 0);
+    document.getElementById("loginBtn").disabled = false;
+    document.getElementById("lockMsg").style.display = "none";
+    console.log("Lock cleared!");
+    window.consoleUnlockInput = ""; // reset input
+  }
+
+  // Optional: limit input length to avoid memory issues
+  if (window.consoleUnlockInput.length > 20) window.consoleUnlockInput = window.consoleUnlockInput.slice(-20);
+});
+  
 </script>
 
 </body>
 </html>
+
