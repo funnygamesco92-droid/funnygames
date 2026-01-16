@@ -36,47 +36,40 @@
 <body>
 
   <div class="login-box">
-    <h2>FUNNY GAMES Dashboard</h2>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Enter</button>
-    <div id="error" class="error">Incorrect username or password</div>
+    <h2>FUNNY GAMES Login</h2>
+    <input id="i1" placeholder="Username">
+    <input id="i2" type="password" placeholder="Password">
+    <button onclick="f1()">Enter</button>
+    <div id="e1" class="error">Invalid credentials</div>
   </div>
 
-<script>
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
-}
+  <script>
+    async function h1(t) {
+      const enc = new TextEncoder();
+      const data = enc.encode(t);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
 
-// CHANGE THESE
-const VALID_USERNAME = "charliekirk50056";
-const PASSWORD_HASH = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c";
+    const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61"; // username hash
+    const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c"; // password hash
 
-async function login() {
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value;
+    async function f1() {
+      const m4n5o6 = document.getElementById("i1").value; // user input
+      const k7l8s9 = document.getElementById("i2").value; // password input
 
-  const hash = await sha256(pass);
+      const uHash = await h1(m4n5o6);
+      const pHash = await h1(k7l8s9);
 
-  if (user === VALID_USERNAME && hash === PASSWORD_HASH) {
-    window.location.href = "https://sites.google.com/view/YOUR-SITE";
-  } else {
-    document.getElementById("error").style.display = "block";
-  }
-}
-</script>
-
+      if (uHash === a1b2c3x && pHash === p9q8r7z) {
+        window.location.href = "https://sites.google.com/view/YOUR-SITE";
+      } else {
+        document.getElementById("e1").style.display = "block";
+      }
+    }
+  </script>
 
 </body>
 </html>
-
-
-
-
-
-
