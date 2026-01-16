@@ -85,39 +85,40 @@
     font-size: 13px;
   }
 </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/argon2-browser/dist/argon2.min.js"></script>
   
-  <script>
-    async function hashWithArgon2(pass) {
-      const hashObj = await argon2.hash({
-        pass: pass,
-        salt: "f;P=0!",
-        type: argon2.ArgonType.Argon2id,
-        time: 2,
-        mem: 1024,
-        hashLen: 32
-      });
-      return hashObj.encoded;
-    }
+<!-- Load Argon2 first -->
+<script src="https://cdn.jsdelivr.net/npm/argon2-browser/dist/argon2.min.js" defer></script>
+<script defer>
+  
+async function hashWithArgon2(pass) {
+  const hashObj = await argon2.hash({
+    pass: pass,
+    salt: "f;P=0!",
+    type: argon2.ArgonType.Argon2id,
+    time: 2,
+    mem: 1024,
+    hashLen: 32
+  });
+  return hashObj.encoded;
+}
 
-    const USER_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$4QjfF0+Qc4N5CV+3R8+6cg";
-    const PASS_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$uHQAlHjRWcv1J5GvTAVoCg";
+const USER_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$4QjfF0+Qc4N5CV+3R8+6cg";
+const PASS_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$uHQAlHjRWcv1J5GvTAVoCg";
 
-    async function login() {
-      const userInput = document.getElementById("i1").value;
-      const passInput = document.getElementById("i2").value;
+async function login() {
+  const userInput = document.getElementById("i1").value;
+  const passInput = document.getElementById("i2").value;
 
-      const userHash = await hashWithArgon2(userInput);
-      const passHash = await hashWithArgon2(passInput);
+  const userHash = await hashWithArgon2(userInput);
+  const passHash = await hashWithArgon2(passInput);
 
-      if (userHash === USER_HASH && passHash === PASS_HASH) {
-        window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
-      } else {
-        document.getElementById("e1").style.display = "block";
-      }
-    }
-  </script>
+  if (userHash === USER_HASH && passHash === PASS_HASH) {
+    window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
+  } else {
+    document.getElementById("e1").style.display = "block";
+  }
+}
+</script>
 
 </head>
 <body>
@@ -130,6 +131,7 @@
   </div>
 </body>
 </html>
+
 
 
 
