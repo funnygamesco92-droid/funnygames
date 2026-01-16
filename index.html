@@ -67,14 +67,9 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
-  button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(255, 255, 255, 0.35);
-  }
-
-  button:active {
-    transform: translateY(0);
-    box-shadow: none;
+  button:disabled {
+    background: grey;
+    cursor: not-allowed;
   }
 
   .error {
@@ -94,7 +89,6 @@
   <input id="i2" type="password" placeholder="Password">
   <button onclick="f1()" id="loginBtn">Sign in</button>
   <div id="e1" class="error">Incorrect username or password.</div>
-  <div id="lockMsg" class="error" style="display:none;"></div>
 </div>
 
 <script>
@@ -103,7 +97,7 @@ const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371
 const MAX_ATTEMPTS = 3;
 const LOCK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
-// Initialize localStorage for attempts and lock
+// Initialize localStorage if empty
 if (!localStorage.getItem("loginAttempts")) localStorage.setItem("loginAttempts", 0);
 if (!localStorage.getItem("lockUntil")) localStorage.setItem("lockUntil", 0);
 
@@ -117,38 +111,25 @@ async function h1(t) {
     .join("");
 }
 
-// Update lock message countdown
-function updateLockMessage() {
+// Check if button should be disabled on page load
+function checkLock() {
   const lockUntil = parseInt(localStorage.getItem("lockUntil"));
-  const now = Date.now();
-  if (now >= lockUntil) {
-    // Lock expired
+  if (Date.now() < lockUntil) {
+    document.getElementById("loginBtn").disabled = true;
+  } else {
+    document.getElementById("loginBtn").disabled = false;
     localStorage.setItem("loginAttempts", 0);
     localStorage.setItem("lockUntil", 0);
-    document.getElementById("lockMsg").style.display = "none";
-    document.getElementById("loginBtn").disabled = false;
-    return;
   }
-
-  const remaining = lockUntil - now;
-  const hrs = Math.floor(remaining / (1000 * 60 * 60));
-  const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-  const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-
-  document.getElementById("lockMsg").style.display = "block";
-  document.getElementById("lockMsg").innerText =
-    `Maximum attempts reached, please try again in ${hrs.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`;
-
-  document.getElementById("loginBtn").disabled = true;
 }
 
-// Run countdown every second
-setInterval(updateLockMessage, 1000);
-updateLockMessage();
+// Call on page load
+checkLock();
 
 async function f1() {
+  // prevent login if locked
   const lockUntil = parseInt(localStorage.getItem("lockUntil"));
-  if (Date.now() < lockUntil) return; // still locked
+  if (Date.now() < lockUntil) return;
 
   const m4n5o6 = document.getElementById("i1").value;
   const k7l8s9 = document.getElementById("i2").value;
@@ -166,9 +147,8 @@ async function f1() {
     localStorage.setItem("loginAttempts", attempts);
 
     if (attempts >= MAX_ATTEMPTS) {
-      const lockTime = Date.now() + LOCK_DURATION;
-      localStorage.setItem("lockUntil", lockTime);
-      updateLockMessage();
+      localStorage.setItem("lockUntil", Date.now() + LOCK_DURATION);
+      document.getElementById("loginBtn").disabled = true;
     }
   }
 }
