@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FUNNY GAMES Dashboard | Login</title>
+  <title>FUNNY GAMES Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
 <style>
   body {
@@ -85,59 +85,44 @@
     font-size: 13px;
   }
 </style>
-  
-<!-- Load Argon2 first -->
-<script src="https://cdn.jsdelivr.net/npm/argon2-browser@1.26.0/dist/argon2.min.js"></script>
-  
-<script>
-window.onload = () => {
-  async function hashWithArgon2(pass) {
-    const hashObj = await argon2.hash({
-      pass: pass,
-      salt: "f;P=0!",
-      type: argon2.ArgonType.Argon2id,
-      time: 2,
-      mem: 1024,
-      hashLen: 32
-    });
-    return hashObj.encoded;
-  }
-
-  const USER_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$4QjfF0+Qc4N5CV+3R8+6cg";
-  const PASS_HASH = "$argon2id$v=19$m=16,t=2,p=1$LmYpbyFRK2A$uHQAlHjRWcv1J5GvTAVoCg";
-
-  async function login() {
-    const userInput = document.getElementById("i1").value;
-    const passInput = document.getElementById("i2").value;
-
-    const userHash = await hashWithArgon2(userInput);
-    const passHash = await hashWithArgon2(passInput);
-
-    if (userHash === USER_HASH && passHash === PASS_HASH) {
-      window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
-    } else {
-      document.getElementById("e1").style.display = "block";
-    }
-  }
-
-  // expose globally so button can access it
-  window.login = login;
-};
-</script>
-
 </head>
 <body>
+
   <div class="login-box">
-    <h2>FUNNY GAMES Login</h2>
+    <h2>FUNNY GAMES Dashboard | Sign in</h2>
     <input id="i1" placeholder="Username">
     <input id="i2" type="password" placeholder="Password">
-    <button onclick="login()">Enter</button>
-    <div id="e1" class="error">Invalid credentials</div>
+    <button onclick="f1()">Enter</button>
+    <div id="e1" class="error">Incorrect username or password.</div>
   </div>
+
+  <script>
+    async function h1(t) {
+      const enc = new TextEncoder();
+      const data = enc.encode(t);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    const a1b2c3x = "6fe3b73af4eee2dd741b80179143387a2264433f1222ac961637207be3256e61"; // username hash
+    const p9q8r7z = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c"; // password hash
+
+    async function f1() {
+      const m4n5o6 = document.getElementById("i1").value; // user input
+      const k7l8s9 = document.getElementById("i2").value; // password input
+
+      const uHash = await h1(m4n5o6);
+      const pHash = await h1(k7l8s9);
+
+      if (uHash === a1b2c3x && pHash === p9q8r7z) {
+        window.location.href = "https://sites.google.com/view/funny-games-reboot/home?authuser=7";
+      } else {
+        document.getElementById("e1").style.display = "block";
+      }
+    }
+  </script>
+
 </body>
 </html>
-
-
-
-
-
