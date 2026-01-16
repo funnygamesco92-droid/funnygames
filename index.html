@@ -43,24 +43,38 @@
     <div id="error" class="error">Incorrect username or password</div>
   </div>
 
-  <script>
-    const CORRECT_USERNAME = "kirky50056";
-    const CORRECT_PASSWORD = "charliekirkcityboy";
+<script>
+async function sha256(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
-    function login() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
+// CHANGE THESE
+const VALID_USERNAME = "charliekirk50056";
+const PASSWORD_HASH = "ec4053c7da4f5fa2705b94a75ecd0ae42a354e446c2567cf7cbadb7ee752371c";
 
-      if (user === CORRECT_USERNAME && pass === CORRECT_PASSWORD) {
-        window.location.href = "https://sites.google.com/view/funny-games-reboot/home";
-      } else {
-        document.getElementById("error").style.display = "block";
-      }
-    }
-  </script>
+async function login() {
+  const user = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value;
+
+  const hash = await sha256(pass);
+
+  if (user === VALID_USERNAME && hash === PASSWORD_HASH) {
+    window.location.href = "https://sites.google.com/view/YOUR-SITE";
+  } else {
+    document.getElementById("error").style.display = "block";
+  }
+}
+</script>
+
 
 </body>
 </html>
+
 
 
 
