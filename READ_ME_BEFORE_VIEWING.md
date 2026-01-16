@@ -6,17 +6,17 @@ ANY unauthorized access, attempted access, credential harvesting, copying, monit
 
 Unauthorized access may constitute a criminal offense under applicable computer misuse, cybersecurity, and privacy laws, including but not limited to laws governing:
 
-Unauthorized computer access
-Credential theft
-Circumvention of access controls
+Unauthorized computer access,
+Credential theft,
+Circumvention of access controls,
 
 Violations may result in:
 
-Immediate access revocation
-Permanent account bans
-Evidence preservation
-Civil liability
-Criminal prosecution
+Immediate access revocation,
+Permanent account bans,
+Evidence preservation,
+Civil liability,
+Criminal prosecution,
 
 All activity may be logged, monitored, and reviewed.
 
