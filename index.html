@@ -84,7 +84,9 @@
     display: none;
     font-size: 13px;
   }
-  
+<style>
+
+<script src="https://cdn.jsdelivr.net/npm/argon2-browser/dist/argon2.min.js"></script>  
 <script>
 async function hashWithArgon2(pass) {
   const hashObj = await argon2.hash({
@@ -118,5 +120,6 @@ async function login() {
 
 </body>
 </html>
+
 
 
